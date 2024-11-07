@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寻宝小游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin-top: 50px;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        #game {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        @keyframes slideDown {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(0); }
+        }
+        @keyframes guardAppear {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes treasureAppear {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        #clueAnimation img {
+            animation: slideDown 2s forwards;
+        }
+        #decodingAnimation img {
+            animation: slideDown 2s forwards;
+        }
+        #guardAnimation img {
+            animation: guardAppear 2s forwards;
+        }
+        #treasureAnimation img {
+            animation: treasureAppear 2s forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>寻宝小游戏</h1>
+        <p>在古老的图书馆里找到了第一个线索...</p>
+        <button onclick="findClue()">寻找线索</button>
+        <button onclick="decodeClue()">解码线索</button>
+        <button onclick="enterTemple()">进入神庙</button>
+        <div id="message"></div>
+    </div>
+    <div id="clueAnimation" style="display: none;">
+        <img src="clue.png" alt="Clue" style="width: 100px; height: auto;">
+    </div>
+    <div id="decodingAnimation" style="display: none;">
+        <img src="decode.png" alt="Decoding" style="width: 100px; height: auto;">
+    </div>
+    <div id="guardAnimation" style="display: none;">
+        <img src="guard.png" alt="Guard" style="width: 100px; height: auto;">
+    </div>
+    <div id="treasureAnimation" style="display: none;">
+        <img src="treasure.png" alt="Treasure" style="width: 100px; height: auto;">
+    </div>
+    
+
+    <script>
+        let clueFound = false;
+        let decoded = false;
+        let inTemple = false;
+
+        function findClue() {
+            if (!clueFound) {
+                clueFound = true;
+                document.getElementById('message').innerText = '找到了线索！';
+            } else {
+                document.getElementById('message').innerText = '线索已经找到了，无需再寻找。';
+            }
+        }
+
+        function decodeClue() {
+            if (clueFound && !decoded) {
+                decoded = true;
+                document.getElementById('message').innerText = '解码成功！';
+            } else if (!clueFound) {
+                document.getElementById('message').innerText = '请先找到线索再进行解码。';
+            } else {
+                document.getElementById('message').innerText = '线索已经解码，无需再解码。';
+            }
+        }
+
+        function enterTemple() {
+            if (decoded && !inTemple) {
+                inTemple = true;
+                document.getElementById('message').innerText = '进入神庙，遇到了神庙守卫...';
+                setTimeout(() => {
+                    document.getElementById('message').innerText = '寻宝失败！';
+                }, 2000);
+            } else if (!decoded) {
+                document.getElementById('message').innerText = '请先解码线索再进入神庙。';
+            } else {
+                document.getElementById('message').innerText = '已经在神庙中了，无需再进入。';
+            }
+        }
+        async function findClue() {
+            if (!clueFound) {
+                clueFound = true;
+                document.getElementById('message').innerText = '找到了线索！';
+                // 显示线索动画
+                document.getElementById('clueAnimation').style.display = 'block';
+                await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
+                document.getElementById('clueAnimation').style.display = 'none';
+            } else {
+                document.getElementById('message').innerText = '线索已经找到了，无需再寻找。';
+            }
+        }
+        
+        async function decodeClue() {
+            if (clueFound && !decoded) {
+                decoded = true;
+                document.getElementById('message').innerText = '解码成功！';
+                // 显示解码动画
+                document.getElementById('decodingAnimation').style.display = 'block';
+                await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
+                document.getElementById('decodingAnimation').style.display = 'none';
+            } else if (!clueFound) {
+                document.getElementById('message').innerText = '请先找到线索再进行解码。';
+            } else {
+                document.getElementById('message').innerText = '线索已经解码，无需再解码。';
+            }
+        }
+        
+        async function enterTemple() {
+            if (decoded && !inTemple) {
+                inTemple = true;
+                document.getElementById('message').innerText = '进入神庙中';
+                await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
+                // 生成一个0到1之间的随机数
+                const randomNum = Math.random();
+                if (randomNum < 0.5) {
+                    document.getElementById('message').innerText = '糟糕！遇到神庙守卫！寻宝失败！';
+                    // 显示遇到守卫的动画
+                    document.getElementById('guardAnimation').style.display = 'block';
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
+                    document.getElementById('guardAnimation').style.display = 'none';
+                } else {
+                    document.getElementById('message').innerText = '恭喜你找到了宝箱！';
+                    // 显示找到宝藏的动画
+                    document.getElementById('treasureAnimation').style.display = 'block';
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
+                    document.getElementById('treasureAnimation').style.display = 'none';
+                }
+            } else if (!decoded) {
+                document.getElementById('message').innerText = '请先解码线索再进入神庙。';
+            } else if (decoded && inTemple) {
+                document.getElementById('message').innerText = '已经在神庙中了，无需再进入。';
+            }
+        }
+        
+        
+    </script>
+</body>
+</html>
